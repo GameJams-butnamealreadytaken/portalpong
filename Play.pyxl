@@ -11,14 +11,14 @@ let p2Score = 0
 
 let maxRacketY = xy(racket_size, SCREEN_SIZE.y - racket_size)
 
-//TODO create ball function + sruct
+todo("Ball struct ?")
 let ballPos = xy(SCREEN_SIZE.x / 2 + 15,SCREEN_SIZE.y / 2)
 let ballDir = xy(1, 0)
 let ballSpeed = 1
 
 def InitBall():
     ballPos = xy(SCREEN_SIZE.x / 2 + 15,SCREEN_SIZE.y / 2)
-    ballDir = xy(0.1, 1)
+    ballDir = xy(0.1, 1) todo("dir to loser of last point")
     ballSpeed = 2
 
 enter
@@ -72,7 +72,7 @@ else:
         ballPos.y = SCREEN_SIZE.y - ball_size
         ballDir.y *= -1
     else:
-        // TODO check rackets collisions
+        todo("Rackets collisions - check overlaps()")
 
 draw_rect(ballPos, xy(ball_size, ball_size), rgb(100,100,100))
 

@@ -42,7 +42,11 @@
       },
       "racket_speed": {
          "type": "number",
-         "value": 5
+         "value": 3
+      },
+      "ball_size": {
+         "type": "number",
+         "value": 6
       }
    },
    "y_up": false

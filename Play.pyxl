@@ -18,8 +18,13 @@ let ballSpeed = 1
 
 def InitBall():
     ballPos = xy(SCREEN_SIZE.x / 2 + 15,SCREEN_SIZE.y / 2)
-    ballDir = xy(0.1, 1) todo("dir to loser of last point")
-    ballSpeed = 2
+    ballDir = xy(1, 1) 
+    todo("dir to loser of last point")
+    ballSpeed = 3
+
+def BallIntersection(racketPos):
+    todo("https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect")    
+    return false
 
 enter
 ────────────────────────────────────────────────────────────────────────
@@ -53,26 +58,38 @@ draw_line(xy(p2Pos.x, p2Pos.y - racket_size), xy(p2Pos.x, p2Pos.y + racket_size)
 
 //
 // Ball
-ballPos.x += ballDir.x * ballSpeed
-ballPos.y += ballDir.y * ballSpeed
+let newBallX = ballPos.x + ballDir.x * ballSpeed
+let newBallY = ballPos.y + ballDir.y * ballSpeed
 
 // Ball oob
-if ballPos.x < 0:
+if newBallX < 0:
     p2Score++
     InitBall()
-else if ballPos.x > SCREEN_SIZE.x:
+else if newBallX > SCREEN_SIZE.x:
     p1Score++
     InitBall()
 else:
-    //Walls collisions
-    if ballPos.y < ball_size:
-        ballPos.y = ball_size
+    // Walls collisions
+    if newBallY < ball_size:
+        newBallY = ball_size
         ballDir.y *= -1
-    else if ballPos.y > SCREEN_SIZE.y - ball_size:
-        ballPos.y = SCREEN_SIZE.y - ball_size
+    else if newBallY > SCREEN_SIZE.y - ball_size:
+        newBallY = SCREEN_SIZE.y - ball_size
         ballDir.y *= -1
     else:
-        todo("Rackets collisions - check overlaps()")
+        // Rackets collisions
+        todo("segment intersection instead")
+        if ballPos.x > p1Pos.x && newBallX < p1Pos.x + racket_width:
+            if newBallY ≥p1Pos.y - racket_size && newBallY ≤p1Pos.y + racket_size:
+                newBallX = p1Pos.x + racket_width
+                ballDir.x *= -1
+        else if ballPos.x < p2Pos.x && newBallX > p2Pos.x - racket_width:
+            if newBallY ≥ p2Pos.y - racket_size && newBallY ≤ p2Pos.y + racket_size:
+                newBallX = p2Pos.x - racket_width
+                ballDir.x *= -1        
+    
+    ballPos.x = newBallX
+    ballPos.y = newBallY
 
 draw_rect(ballPos, xy(ball_size, ball_size), rgb(100,100,100))
 

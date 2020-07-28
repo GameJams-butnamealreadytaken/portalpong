@@ -46,7 +46,7 @@
       },
       "ball_size": {
          "type": "number",
-         "value": 6
+         "value": 4
       }
    },
    "y_up": false

@@ -20,12 +20,8 @@ def InitBall():
     ballPos = xy(SCREEN_SIZE.x / 2 + 15,SCREEN_SIZE.y / 2)
     ballDir = xy(1, 1) 
     todo("dir to loser of last point")
-    ballSpeed = 3
-
-def BallIntersection(racketPos):
-    todo("https://stackoverflow.com/questions/563198/how-do-you-detect-where-two-line-segments-intersect")    
-    return false
-
+    ballSpeed = 1
+    
 enter
 ────────────────────────────────────────────────────────────────────────
 // Background
@@ -43,8 +39,8 @@ draw_line(xy(192, 0), xy(192, SCREEN_SIZE.y), rgb(100, 100, 100), 0, 3)
 
 //
 // Portal max limits
-draw_line(xy(48, 0), xy(48, SCREEN_SIZE.y), rgba(100, 0, 0, 0.2))
-draw_line(xy(336, 0), xy(336, SCREEN_SIZE.y), rgba(0, 0, 100, 0.2))
+draw_line(xy(60, 0), xy(60, SCREEN_SIZE.y), rgba(100, 0, 0, 0.2))
+draw_line(xy(324, 0), xy(324, SCREEN_SIZE.y), rgba(0, 0, 100, 0.2))
 
 //
 // Rackets
@@ -78,16 +74,19 @@ else:
         ballDir.y *= -1
     else:
         // Rackets collisions
-        todo("segment intersection instead")
         if ballPos.x > p1Pos.x && newBallX < p1Pos.x + racket_width:
-            if newBallY ≥p1Pos.y - racket_size && newBallY ≤p1Pos.y + racket_size:
+            if newBallY + ball_size ≥ p1Pos.y - racket_size && newBallY - ball_size ≤p1Pos.y + racket_size:
                 newBallX = p1Pos.x + racket_width
                 ballDir.x *= -1
+                if abs(newBallY - p1Pos.y) > racket_size:
+                    ballDir.y += 0.5 // TODO adjust value + max
         else if ballPos.x < p2Pos.x && newBallX > p2Pos.x - racket_width:
-            if newBallY ≥ p2Pos.y - racket_size && newBallY ≤ p2Pos.y + racket_size:
+            if newBallY + ball_size ≥ p2Pos.y - racket_size && newBallY - ball_size ≤ p2Pos.y + racket_size:
                 newBallX = p2Pos.x - racket_width
-                ballDir.x *= -1        
-    
+                ballDir.x *= -1
+                if abs(newBallY - p1Pos.y) < racket_size:
+                    ballDir.y += 0.5 // TODO adjust value + max
+                    
     ballPos.x = newBallX
     ballPos.y = newBallY
 
@@ -106,3 +105,5 @@ if joy.x:
    alienPos.x = loop(alienPos.x + joy.x, SCREEN_SIZE.x)
 
 draw_sprite(sprite, alienPos, 0, flip)
+
+

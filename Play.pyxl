@@ -11,28 +11,35 @@ let p2Score = 0
 
 let maxRacketY = xy(racket_size, SCREEN_SIZE.y - racket_size)
 
-todo("Ball struct ?")
 let ballPos = xy(SCREEN_SIZE.x / 2 + 15,SCREEN_SIZE.y / 2)
-let ballDir = xy(1, 0)
-let ballSpeed = 1
+let ballDir = xy(0, 0)
+let ballSpeed = 0
 
 def InitBall():
     ballPos = xy(SCREEN_SIZE.x / 2 + 15,SCREEN_SIZE.y / 2)
-    ballDir = xy(1, 1) 
+    ballDir = xy(0.5, 0.5)
     todo("dir to loser of last point")
     ballSpeed = 1
     
+
+def OnBallBounceOnRacket(padY, ballY):
+    // Lerp y in [0.15;1]
+    ballDir.y = 0.15 + abs(((padY - ballY) / racket_size)) * (1 - 0.15)
+    if ballY < padY:
+        ballDir.y *= -1.0
+
 enter
 ────────────────────────────────────────────────────────────────────────
-// Background
 set_background(rgb(0))
+
 p1Score = 0
 p2Score = 0
+
 InitBall()
+
 
 frame
 ────────────────────────────────────────────────────────────────────────
-
 //
 // Middle line
 draw_line(xy(192, 0), xy(192, SCREEN_SIZE.y), rgb(100, 100, 100), 0, 3)
@@ -54,8 +61,17 @@ draw_line(xy(p2Pos.x, p2Pos.y - racket_size), xy(p2Pos.x, p2Pos.y + racket_size)
 
 //
 // Ball
-let newBallX = ballPos.x + ballDir.x * ballSpeed
-let newBallY = ballPos.y + ballDir.y * ballSpeed
+// Normalize direction to keep 1 vector length for constant speed
+let length = sqrt(ballDir.x*ballDir.x + ballDir.y*ballDir.y)
+if length ≠ 0.0:
+    length = 1 / length
+    ballDir.x *= length
+    ballDir.y *= length
+//ballDir = direction(ballDir)
+
+
+let newBallX = ballPos.x + (ballDir.x * ballSpeed)
+let newBallY = ballPos.y + (ballDir.y * ballSpeed)
 
 // Ball oob
 if newBallX < 0:
@@ -78,14 +94,12 @@ else:
             if newBallY + ball_size ≥ p1Pos.y - racket_size && newBallY - ball_size ≤p1Pos.y + racket_size:
                 newBallX = p1Pos.x + racket_width
                 ballDir.x *= -1
-                if abs(newBallY - p1Pos.y) > racket_size:
-                    ballDir.y += 0.5 // TODO adjust value + max
+                OnBallBounceOnRacket(p1Pos.y, newBallY)
         else if ballPos.x < p2Pos.x && newBallX > p2Pos.x - racket_width:
             if newBallY + ball_size ≥ p2Pos.y - racket_size && newBallY - ball_size ≤ p2Pos.y + racket_size:
                 newBallX = p2Pos.x - racket_width
                 ballDir.x *= -1
-                if abs(newBallY - p1Pos.y) < racket_size:
-                    ballDir.y += 0.5 // TODO adjust value + max
+                OnBallBounceOnRacket(p2Pos.y, newBallY)
                     
     ballPos.x = newBallX
     ballPos.y = newBallY

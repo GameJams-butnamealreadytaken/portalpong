@@ -1,32 +1,54 @@
 Play
 ════════════════════════════════════════════════════════════════════════
+let HalfScreenY = SCREEN_SIZE.y / 2
+
+let White = rgb(100, 100, 100)
 
 let alienPos = xy(½ SCREEN_SIZE.x, 132)
 let flip = xy(1, 1)
 
-let p1Pos = xy(15, SCREEN_SIZE.y / 2)
+let p1Pos = xy(15, HalfScreenY)
 let p1Score = 0
-let p2Pos = xy(SCREEN_SIZE.x - 15, SCREEN_SIZE.y / 2)
+let p2Pos = xy(SCREEN_SIZE.x - 15, HalfScreenY)
 let p2Score = 0
+
+let p1Color = rgb(100, 0, 0)
+let p2Color = rgb(0, 0, 100)
 
 let maxRacketY = xy(racket_size, SCREEN_SIZE.y - racket_size)
 
-let ballPos = xy(SCREEN_SIZE.x / 2 + 15,SCREEN_SIZE.y / 2)
+let ballPos = xy(SCREEN_SIZE.x / 2 + 15,HalfScreenY)
 let ballDir = xy(0, 0)
 let ballSpeed = 0
+let ballLastHit = 0
 
 def InitBall():
-    ballPos = xy(SCREEN_SIZE.x / 2 + 15,SCREEN_SIZE.y / 2)
-    ballDir = xy(0.5, 0.5)
+    ballPos = xy(SCREEN_SIZE.x / 2 + 15, HalfScreenY)
+    ballDir = xy(1, 0.5)
     todo("dir to loser of last point")
-    ballSpeed = 1
+    ballSpeed = 1.5
+    ballLastHit = 0
     
-
 def OnBallBounceOnRacket(padY, ballY):
     // Lerp y in [0.15;1]
     ballDir.y = 0.15 + abs(((padY - ballY) / racket_size)) * (1 - 0.15)
     if ballY < padY:
         ballDir.y *= -1.0
+    canUsePortal = true
+    ballSpeed += 0.1
+
+let p1PortalLimit = 304
+let p2PortalLimit = 80
+
+let canUsePortal = false
+let bIsInPortal = false
+
+def OnTakePortal(portalColor):
+    draw_line(xy(ballPos.x, ballPos.y - 5), xy(ballPos.x, ballPos.y + 5), portalColor, 0, 3)
+    ballPos.y = HalfScreenY + (ballPos.y - HalfScreenY) * -1
+    ballDir.y *= -1.0
+    canUsePortal = false
+
 
 enter
 ────────────────────────────────────────────────────────────────────────
@@ -42,12 +64,12 @@ frame
 ────────────────────────────────────────────────────────────────────────
 //
 // Middle line
-draw_line(xy(192, 0), xy(192, SCREEN_SIZE.y), rgb(100, 100, 100), 0, 3)
+draw_line(xy(192, 0), xy(192, SCREEN_SIZE.y), White, 0, 3)
 
 //
 // Portal max limits
-draw_line(xy(60, 0), xy(60, SCREEN_SIZE.y), rgba(100, 0, 0, 0.2))
-draw_line(xy(324, 0), xy(324, SCREEN_SIZE.y), rgba(0, 0, 100, 0.2))
+draw_line(xy(p1PortalLimit, 0), xy(p1PortalLimit, SCREEN_SIZE.y), rgba(p1Color.r, p1Color.g, p1Color.b, 0.5))
+draw_line(xy(p2PortalLimit, 0), xy(p2PortalLimit, SCREEN_SIZE.y), rgba(p2Color.r, p2Color.g, p2Color.b, 0.5))
 
 //
 // Rackets
@@ -56,9 +78,17 @@ if gamepad_array[0].y:
 if gamepad_array[1].y:
     p2Pos.y = clamp(p2Pos.y + (gamepad_array[1].y * racket_speed), maxRacketY.x, maxRacketY.y)
 
-draw_line(xy(p1Pos.x, p1Pos.y - racket_size), xy(p1Pos.x, p1Pos.y + racket_size), rgb(100, 100, 100), 0, racket_width)
-draw_line(xy(p2Pos.x, p2Pos.y - racket_size), xy(p2Pos.x, p2Pos.y + racket_size), rgb(100, 100, 100), 0, racket_width)
+draw_line(xy(p1Pos.x, p1Pos.y - racket_size), xy(p1Pos.x, p1Pos.y + racket_size), White, 0, racket_width)
+draw_line(xy(p2Pos.x, p2Pos.y - racket_size), xy(p2Pos.x, p2Pos.y + racket_size), White, 0, racket_width)
 
+//
+// Portals
+if canUsePortal:
+    if ballPos.x < p1PortalLimit and ballLastHit == 1 and gamepad_array[0].a == 1:
+        OnTakePortal(p1Color)
+    if ballPos.x > p2PortalLimit and ballLastHit == 2 and gamepad_array[1].a == 1:
+        OnTakePortal(p2Color)
+    
 //
 // Ball
 // Normalize direction to keep 1 vector length for constant speed
@@ -68,7 +98,6 @@ if length ≠ 0.0:
     ballDir.x *= length
     ballDir.y *= length
 //ballDir = direction(ballDir)
-
 
 let newBallX = ballPos.x + (ballDir.x * ballSpeed)
 let newBallY = ballPos.y + (ballDir.y * ballSpeed)
@@ -94,17 +123,19 @@ else:
             if newBallY + ball_size ≥ p1Pos.y - racket_size && newBallY - ball_size ≤p1Pos.y + racket_size:
                 newBallX = p1Pos.x + racket_width
                 ballDir.x *= -1
+                ballLastHit = 1
                 OnBallBounceOnRacket(p1Pos.y, newBallY)
         else if ballPos.x < p2Pos.x && newBallX > p2Pos.x - racket_width:
             if newBallY + ball_size ≥ p2Pos.y - racket_size && newBallY - ball_size ≤ p2Pos.y + racket_size:
                 newBallX = p2Pos.x - racket_width
                 ballDir.x *= -1
+                ballLastHit = 2
                 OnBallBounceOnRacket(p2Pos.y, newBallY)
                     
     ballPos.x = newBallX
     ballPos.y = newBallY
 
-draw_rect(ballPos, xy(ball_size, ball_size), rgb(100,100,100))
+draw_rect(ballPos, xy(ball_size, ball_size), White)
 
 //
 // Draw scores

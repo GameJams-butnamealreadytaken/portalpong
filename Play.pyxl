@@ -42,13 +42,20 @@ let p2PortalLimit = 80
 
 let canUsePortal = false
 let bIsInPortal = false
+let portalStart = 0
+let currPortalColor = rgb(0)
+let tookPortal = false
 
-def OnTakePortal(portalColor):
-    draw_line(xy(ballPos.x, ballPos.y - 5), xy(ballPos.x, ballPos.y + 5), portalColor, 0, 3)
+def OnStartPortal():
+    bIsInPortal = true
+    portalStart = mode_frames
+    tookPortal = false
+
+def OnTakePortal():
     ballPos.y = HalfScreenY + (ballPos.y - HalfScreenY) * -1
     ballDir.y *= -1.0
     canUsePortal = false
-
+    tookPortal = true
 
 enter
 ────────────────────────────────────────────────────────────────────────
@@ -85,57 +92,68 @@ draw_line(xy(p2Pos.x, p2Pos.y - racket_size), xy(p2Pos.x, p2Pos.y + racket_size)
 // Portals
 if canUsePortal:
     if ballPos.x < p1PortalLimit and ballLastHit == 1 and gamepad_array[0].a == 1:
-        OnTakePortal(p1Color)
+        currPortalColor = p1Color
+        OnStartPortal()
     if ballPos.x > p2PortalLimit and ballLastHit == 2 and gamepad_array[1].a == 1:
-        OnTakePortal(p2Color)
+        currPortalColor = p2Color
+        OnStartPortal()
+
+if bIsInPortal:
+    let currFrame = mode_frames - portalStart
     
-//
-// Ball
-// Normalize direction to keep 1 vector length for constant speed
-let length = sqrt(ballDir.x*ballDir.x + ballDir.y*ballDir.y)
-if length ≠ 0.0:
-    length = 1 / length
-    ballDir.x *= length
-    ballDir.y *= length
-//ballDir = direction(ballDir)
-
-let newBallX = ballPos.x + (ballDir.x * ballSpeed)
-let newBallY = ballPos.y + (ballDir.y * ballSpeed)
-
-// Ball oob
-if newBallX < 0:
-    p2Score++
-    InitBall()
-else if newBallX > SCREEN_SIZE.x:
-    p1Score++
-    InitBall()
+    draw_line(xy(ballPos.x, ballPos.y - 5), xy(ballPos.x, ballPos.y + 5), currPortalColor, 0, 3)
+    if not tookPortal and currFrame > 10:
+        OnTakePortal()
+    if currFrame > 20:
+        bIsInPortal = false
 else:
-    // Walls collisions
-    if newBallY < ball_size:
-        newBallY = ball_size
-        ballDir.y *= -1
-    else if newBallY > SCREEN_SIZE.y - ball_size:
-        newBallY = SCREEN_SIZE.y - ball_size
-        ballDir.y *= -1
+    //
+    // Ball
+    // Normalize direction to keep 1 vector length for constant speed
+    let length = sqrt(ballDir.x*ballDir.x + ballDir.y*ballDir.y)
+    if length ≠ 0.0:
+        length = 1 / length
+        ballDir.x *= length
+        ballDir.y *= length
+    //ballDir = direction(ballDir)
+    
+    let newBallX = ballPos.x + (ballDir.x * ballSpeed)
+    let newBallY = ballPos.y + (ballDir.y * ballSpeed)
+    
+    // Ball oob
+    if newBallX < 0:
+        p2Score++
+        InitBall()
+    else if newBallX > SCREEN_SIZE.x:
+        p1Score++
+        InitBall()
     else:
-        // Rackets collisions
-        if ballPos.x > p1Pos.x && newBallX < p1Pos.x + racket_width:
-            if newBallY + ball_size ≥ p1Pos.y - racket_size && newBallY - ball_size ≤p1Pos.y + racket_size:
-                newBallX = p1Pos.x + racket_width
-                ballDir.x *= -1
-                ballLastHit = 1
-                OnBallBounceOnRacket(p1Pos.y, newBallY)
-        else if ballPos.x < p2Pos.x && newBallX > p2Pos.x - racket_width:
-            if newBallY + ball_size ≥ p2Pos.y - racket_size && newBallY - ball_size ≤ p2Pos.y + racket_size:
-                newBallX = p2Pos.x - racket_width
-                ballDir.x *= -1
-                ballLastHit = 2
-                OnBallBounceOnRacket(p2Pos.y, newBallY)
-                    
-    ballPos.x = newBallX
-    ballPos.y = newBallY
-
-draw_rect(ballPos, xy(ball_size, ball_size), White)
+        // Walls collisions
+        if newBallY < ball_size:
+            newBallY = ball_size
+            ballDir.y *= -1
+        else if newBallY > SCREEN_SIZE.y - ball_size:
+            newBallY = SCREEN_SIZE.y - ball_size
+            ballDir.y *= -1
+        else:
+            // Rackets collisions
+            if ballPos.x > p1Pos.x && newBallX < p1Pos.x + racket_width:
+                if newBallY + ball_size ≥ p1Pos.y - racket_size && newBallY - ball_size ≤p1Pos.y + racket_size:
+                    newBallX = p1Pos.x + racket_width
+                    ballDir.x *= -1
+                    ballLastHit = 1
+                    OnBallBounceOnRacket(p1Pos.y, newBallY)
+            else if ballPos.x < p2Pos.x && newBallX > p2Pos.x - racket_width:
+                if newBallY + ball_size ≥ p2Pos.y - racket_size && newBallY - ball_size ≤ p2Pos.y + racket_size:
+                    newBallX = p2Pos.x - racket_width
+                    ballDir.x *= -1
+                    ballLastHit = 2
+                    OnBallBounceOnRacket(p2Pos.y, newBallY)
+                        
+        ballPos.x = newBallX
+        ballPos.y = newBallY
+    
+    draw_rect(ballPos, xy(ball_size, ball_size), White)
 
 //
 // Draw scores

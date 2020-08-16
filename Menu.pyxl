@@ -1,0 +1,29 @@
+Menu
+════════════════════════════════════════════════════════════════════════
+let frameCounter = 0
+
+
+enter
+────────────────────────────────────────────────────────────────────────
+frameCounter = 0
+
+play_sound(GameMusic, true)
+
+
+frame
+────────────────────────────────────────────────────────────────────────
+
+draw_text(testfont, "PORTAL PONG", xy(SCREEN_SIZE.x/2, SCREEN_SIZE.y/2 - 30), rgb(1,1,1), ∅, ∅, "center", "center", 0, ∅, 500)
+
+if frameCounter ≠ 0:
+    draw_text(font, "Press enter", xy(SCREEN_SIZE.x/2, SCREEN_SIZE.y/2 + 50), rgb(1,1,1), ∅, ∅, "center", "center", 0, ∅, 500)
+    frameCounter -= 1
+    
+if mode_frames mod 60 == 0:
+    frameCounter = 30
+
+if lastWinner ≠ 0:
+    draw_text(font, "Last winner : " + format_number(lastWinner, ""), xy(SCREEN_SIZE.x/2, SCREEN_SIZE.y/2 + 75), rgb(1,1,1), ∅, ∅, "center", "center")
+
+if any_button_press():
+    push_mode(Play)

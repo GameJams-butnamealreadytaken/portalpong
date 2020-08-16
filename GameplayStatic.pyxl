@@ -1,0 +1,2 @@
+// Scripts, variables, and constants here are visible to all modes
+let lastWinner = 0

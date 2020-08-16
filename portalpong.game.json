@@ -4,16 +4,26 @@
    "copyright": "©2020 SIL3nCe",
    "license": "Open source under the GPL-3.0-only license https://www.gnu.org/licenses/gpl-3.0.html",
    "packages": [],
-   "scripts": [],
+   "scripts": [
+      "GameplayStatic.pyxl"
+   ],
    "modes": [
-      "Play*"
+      "Play*",
+      "Menu"
    ],
    "docs": [
       "todo.md"
    ],
    "assets": {
       "font": "quad://fonts/deja-8.font.json",
-      "astronaut": "quad://sprites/kenney-alien-yellow-16x32.sprite.json"
+      "astronaut": "quad://sprites/kenney-alien-yellow-16x32.sprite.json",
+      "RacketCollision": "quad://sounds/hit-01.sound.json",
+      "WallCollision": "quad://sounds/hit-03.sound.json",
+      "PointTaken": "quad://sounds/coin-07.sound.json",
+      "EnterPortal": "quad://sounds/jump-04.sound.json",
+      "fontbig": "quad://fonts/deja-15.font.json",
+      "testfont": "quad://fonts/octant-17.font.json",
+      "GameMusic": "quad://sounds/loop-chilltech.sound.json"
    },
    "version": 0,
    "min_players": 1,
@@ -47,6 +57,10 @@
       "ball_size": {
          "type": "number",
          "value": 4
+      },
+      "max_score": {
+         "type": "number",
+         "value": 10
       }
    },
    "y_up": false

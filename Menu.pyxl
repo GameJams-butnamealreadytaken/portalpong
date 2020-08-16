@@ -29,5 +29,5 @@ draw_text(font, "Lucky mode", xy(50, SCREEN_SIZE.y - 50), luckyColor[luckyMode],
     
 if joy.qq:
     luckyMode = 1 - luckyMode
-else if joy.aa:
+else if joy.bb:
     push_mode(Play)

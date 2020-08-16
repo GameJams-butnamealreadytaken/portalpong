@@ -23,7 +23,8 @@ let ballLastHit = 0
 
 def InitBall(factor default 1):
     ballPos = xy(SCREEN_SIZE.x / 2 + 15, HalfScreenY)
-    ballDir = xy(1 * factor, random(-1, 1))
+    let y = if luckyMode then random(-1, 1) else random_sign()
+    ballDir = xy(1 * factor, y)
     ballSpeed = if luckyMode then 10 else 2
     ballLastHit = 0
     
@@ -91,7 +92,6 @@ if gamepad_array[0].q or gamepad_array[1].q or p1Score == max_score or p2Score =
 
 //
 // Middle line
-//draw_line(xy(192, 0), xy(192, SCREEN_SIZE.y), White, 0, 2)
 for 0 ≤ i < 30:
     draw_line(xy(192, i * 10), xy(192, i * 10 + 5), White, 0, 2)
 

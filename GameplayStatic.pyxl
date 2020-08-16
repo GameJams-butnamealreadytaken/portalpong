@@ -1,2 +1,3 @@
 // Scripts, variables, and constants here are visible to all modes
 let lastWinner = 0
+let luckyMode = 0

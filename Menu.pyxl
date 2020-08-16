@@ -2,7 +2,7 @@ Menu
 ════════════════════════════════════════════════════════════════════════
 let frameCounter = 0
 
-
+let luckyColor = [rgb(1),rgb(0,1,0)]
 enter
 ────────────────────────────────────────────────────────────────────────
 frameCounter = 0
@@ -13,17 +13,21 @@ play_sound(GameMusic, true)
 frame
 ────────────────────────────────────────────────────────────────────────
 
-draw_text(testfont, "PORTAL PONG", xy(SCREEN_SIZE.x/2, SCREEN_SIZE.y/2 - 30), rgb(1,1,1), ∅, ∅, "center", "center", 0, ∅, 500)
+draw_text(testfont, "PORTAL PONG", xy(SCREEN_SIZE.x/2, SCREEN_SIZE.y/2 - 30), rgb(1,1,1), ∅, ∅, "center", "center")
 
 if frameCounter ≠ 0:
-    draw_text(font, "Press enter", xy(SCREEN_SIZE.x/2, SCREEN_SIZE.y/2 + 50), rgb(1,1,1), ∅, ∅, "center", "center", 0, ∅, 500)
+    draw_text(font, "Press enter", xy(SCREEN_SIZE.x/2, SCREEN_SIZE.y/2 + 50), rgb(1,1,1), ∅, ∅, "center", "center")
     frameCounter -= 1
     
-if mode_frames mod 60 == 0:
-    frameCounter = 30
+if mode_frames mod 100 == 0:
+    frameCounter = 50
 
 if lastWinner ≠ 0:
-    draw_text(font, "Last winner : " + format_number(lastWinner, ""), xy(SCREEN_SIZE.x/2, SCREEN_SIZE.y/2 + 75), rgb(1,1,1), ∅, ∅, "center", "center")
+    draw_text(font, "Last winner : " + format_number(lastWinner, ""), xy(SCREEN_SIZE.x/2, SCREEN_SIZE.y/2 + 90), rgb(1,1,1), ∅, ∅, "center", "center")
 
-if any_button_press():
+draw_text(font, "Lucky mode", xy(50, SCREEN_SIZE.y - 50), luckyColor[luckyMode], ∅, ∅, "center", "center")
+    
+if joy.qq:
+    luckyMode = 1 - luckyMode
+else if joy.aa:
     push_mode(Play)

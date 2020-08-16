@@ -8,8 +8,8 @@
       "GameplayStatic.pyxl"
    ],
    "modes": [
-      "Play*",
-      "Menu"
+      "Play",
+      "Menu*"
    ],
    "docs": [
       "todo.md"

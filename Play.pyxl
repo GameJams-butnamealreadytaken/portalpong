@@ -4,9 +4,6 @@ let HalfScreenY = SCREEN_SIZE.y / 2
 
 let White = rgb(1, 1, 1)
 
-let alienPos = xy(½ SCREEN_SIZE.x, 132)
-let flip = xy(1, 1)
-
 let p1Pos = xy(15, HalfScreenY)
 let p1Score = 0
 let p2Pos = xy(SCREEN_SIZE.x - 15, HalfScreenY)
@@ -17,6 +14,8 @@ let p2Color = rgb(0.25, 0.8, 1)
 
 let maxRacketY = xy(racket_size, SCREEN_SIZE.y - racket_size)
 
+//
+// Ball
 let ballPos = xy(SCREEN_SIZE.x / 2 + 15,HalfScreenY)
 let ballDir = xy(0, 0)
 let ballSpeed = 0
@@ -36,6 +35,8 @@ def OnBallBounceOnRacket(padY, ballY):
     canUsePortal = true
     ballSpeed += 0.1
 
+//
+// Portals
 let p1PortalLimit = 304
 let p2PortalLimit = 80
 
@@ -57,16 +58,27 @@ def OnTakePortal():
     tookPortal = true
     play_sound(EnterPortal)
     
+//
+// Alien
+let alienPos = xy(½ SCREEN_SIZE.x, 132)
+let flip = xy(1, 1)
+let alienMoveDt = 0
 
 enter
 ────────────────────────────────────────────────────────────────────────
 set_background(rgb(0))
 
+p1Pos = xy(15, HalfScreenY)
 p1Score = 0
+p2Pos = xy(SCREEN_SIZE.x - 15, HalfScreenY)
 p2Score = 0
+
+canUsePortal = false
+bIsInPortal = false
 
 InitBall()
 
+alienMoveDt = 0
 
 frame
 ────────────────────────────────────────────────────────────────────────
@@ -79,7 +91,9 @@ if gamepad_array[0].q or gamepad_array[1].q or p1Score == max_score or p2Score =
 
 //
 // Middle line
-draw_line(xy(192, 0), xy(192, SCREEN_SIZE.y), White, 0, 2)
+//draw_line(xy(192, 0), xy(192, SCREEN_SIZE.y), White, 0, 2)
+for 0 ≤ i < 30:
+    draw_line(xy(192, i * 10), xy(192, i * 10 + 5), White, 0, 2)
 
 //
 // Portal max limits
@@ -172,10 +186,15 @@ draw_text(font, format_number(p2Score, ""), xy(SCREEN_SIZE.x/2 + 50, 50), p2Colo
 
 // Alien
 let sprite = astronaut.crawl[0]
-if joy.x:
-   flip.x = joy.x
-   sprite = astronaut.crawl[floor(mode_frames / 10) mod 2]
-   alienPos.x = loop(alienPos.x + joy.x, SCREEN_SIZE.x)
+if alienMoveDt == 0:
+    let v = random_integer(-1, 3)
+    flip.x = if v == 1 or v == -1 then v else 0
+    alienMoveDt = random_integer(50, 150)
+else:
+    if flip.x ≠ 0:
+       sprite = astronaut.crawl[floor(mode_frames / 10) mod 2]
+    alienPos.x = loop(alienPos.x + flip.x, SCREEN_SIZE.x)
+    alienMoveDt -= 1
 
 draw_sprite(sprite, alienPos, 0, flip)
 

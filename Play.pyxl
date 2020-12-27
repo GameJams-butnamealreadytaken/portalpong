@@ -13,7 +13,7 @@ let maxRacketY = xy(racket_size, SCREEN_SIZE.y - racket_size)
 
 //
 // Ball
-let ballPos = xy(SCREEN_SIZE.x / 2 + 15,HalfScreenY)
+let ballPos = xy(SCREEN_SIZE.x / 2 + 15, HalfScreenY)
 let ballDir = xy(0, 0)
 let ballSpeed = 0
 let ballLastHit = 0
@@ -105,7 +105,18 @@ if not gLuckyMode:
     if gamepad_array[0].y:
         p1Pos.y = clamp(p1Pos.y + (gamepad_array[0].y * racket_speed), maxRacketY.x, maxRacketY.y)
     if gAIMode:
-        //TODO - p2Pos update
+        let Ygoal = HalfScreenY
+        if 2 ≠ ballLastHit:
+            Ygoal = ballPos.y
+        
+        let yMove = 1 // Down
+        if Ygoal < p2Pos.y: yMove = -1 // Up
+        
+        // Smooth move if target Y is close enough
+        if abs(Ygoal - p2Pos.y) ≤ racket_speed:
+            p2Pos.y = clamp(Ygoal, maxRacketY.x, maxRacketY.y)
+        else:
+            p2Pos.y = clamp(p2Pos.y + (yMove * racket_speed), maxRacketY.x, maxRacketY.y)
     else:
         if gamepad_array[1].y:
             p2Pos.y = clamp(p2Pos.y + (gamepad_array[1].y * racket_speed), maxRacketY.x, maxRacketY.y)
@@ -119,9 +130,12 @@ if canUsePortal:
     if ballPos.x < p1PortalLimit and ballLastHit == 1 and gamepad_array[0].e == 1:
         currPortalColor = p1Color
         OnStartPortal()
-    if ballPos.x > p2PortalLimit and ballLastHit == 2 and gamepad_array[1].e == 1:
-        currPortalColor = p2Color
-        OnStartPortal()
+    if ballPos.x > p2PortalLimit and ballLastHit == 2:
+        if gAIMode:
+            //TODO enable portal
+        else if gamepad_array[1].e == 1:
+            currPortalColor = p2Color
+            OnStartPortal()
 
 if bIsInPortal:
     let currFrame = mode_frames - portalStart

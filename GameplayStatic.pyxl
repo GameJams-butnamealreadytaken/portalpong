@@ -1,3 +1,4 @@
 // Scripts, variables, and constants here are visible to all modes
-let lastWinner = 0
-let luckyMode = 0
+let gLastWinner = 0
+let gLuckyMode = 0
+let gAIMode = 0

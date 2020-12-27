@@ -1,33 +1,58 @@
 Menu
 ════════════════════════════════════════════════════════════════════════
-let frameCounter = 0
+const CHOICE = {HUMAN:0, ONLINE:1, AI:2, LUCKY:3}
 
-let luckyColor = [rgb(1),rgb(0,1,0)]
+let currentChoice = CHOICE.HUMAN
+
+def GetMenuTextColor(menu):
+    if currentChoice == menu:
+        return rgb(1,1,0)
+    else:
+        return rgb(1,1,1)
+
+def GetWinnerColor():
+    if gLastWinner == 1:
+        return p1Color
+    else if gLastWinner == 2:
+        return p2Color
+    else:
+        return rgb(1,1,1)
+
 enter
 ────────────────────────────────────────────────────────────────────────
-frameCounter = 0
-
 play_sound(GameMusic, true)
 
+currentChoice = CHOICE.HUMAN
+
+gLuckyMode = 0
+gAIMode = 0
 
 frame
 ────────────────────────────────────────────────────────────────────────
 
 draw_text(testfont, "PORTAL PONG", xy(SCREEN_SIZE.x/2, SCREEN_SIZE.y/2 - 30), rgb(1,1,1), ∅, ∅, "center", "center")
 
-if frameCounter ≠ 0:
-    draw_text(font, "Press enter", xy(SCREEN_SIZE.x/2, SCREEN_SIZE.y/2 + 50), rgb(1,1,1), ∅, ∅, "center", "center")
-    frameCounter -= 1
-    
-if mode_frames mod 100 == 0:
-    frameCounter = 50
+draw_text(font, "Human vs Human", xy(SCREEN_SIZE.x/2, SCREEN_SIZE.y/2 + 20), GetMenuTextColor(CHOICE.HUMAN), ∅, ∅, "center", "center")
+draw_text(font, "Human vs Human Online", xy(SCREEN_SIZE.x/2, SCREEN_SIZE.y/2 + 40), GetMenuTextColor(CHOICE.ONLINE), ∅, ∅, "center", "center")
+draw_text(font, "Human vs AI", xy(SCREEN_SIZE.x/2, SCREEN_SIZE.y/2 + 60), GetMenuTextColor(CHOICE.AI), ∅, ∅, "center", "center")
+draw_text(font, "Lucky Mode", xy(SCREEN_SIZE.x/2, SCREEN_SIZE.y/2 + 80), GetMenuTextColor(CHOICE.LUCKY), ∅, ∅, "center", "center")
 
-if lastWinner ≠ 0:
-    draw_text(font, "Last winner : " + format_number(lastWinner, ""), xy(SCREEN_SIZE.x/2, SCREEN_SIZE.y/2 + 90), rgb(1,1,1), ∅, ∅, "center", "center")
-
-draw_text(font, "Lucky mode", xy(50, SCREEN_SIZE.y - 50), luckyColor[luckyMode], ∅, ∅, "center", "center")
+if gLastWinner ≠ 0:
+    let xOffset = -120
+    if 2 == gLastWinner: xOffset *= -1
+    draw_text(font, "Last winner : " + format_number(gLastWinner, ""), xy(SCREEN_SIZE.x/2 + xOffset, SCREEN_SIZE.y/2 + 80), GetWinnerColor(), ∅, ∅, "center", "center")
     
-if joy.qq:
-    luckyMode = 1 - luckyMode
+if 0 ≠joy.yy:
+   currentChoice = clamp(currentChoice + joy.yy, 0, 3)
 else if joy.bb:
-    push_mode(Play)
+    if CHOICE.LUCKY == currentChoice: 
+        gLuckyMode = 1
+        push_mode(Play)
+    else if CHOICE.ONLINE == currentChoice: 
+        //TODO
+        push_mode(Play)
+    else if CHOICE.AI == currentChoice:
+        gAIMode = 1
+        push_mode(Play)
+    else:
+        push_mode(Play)

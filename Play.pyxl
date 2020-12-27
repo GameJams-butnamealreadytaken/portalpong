@@ -9,9 +9,6 @@ let p1Score = 0
 let p2Pos = xy(SCREEN_SIZE.x - 15, HalfScreenY)
 let p2Score = 0
 
-let p1Color = rgb(1, 0, 0)
-let p2Color = rgb(0.25, 0.8, 1)
-
 let maxRacketY = xy(racket_size, SCREEN_SIZE.y - racket_size)
 
 //
@@ -22,10 +19,10 @@ let ballSpeed = 0
 let ballLastHit = 0
 
 def InitBall(factor default 1):
-    ballPos = xy(SCREEN_SIZE.x / 2 + 15, HalfScreenY)
-    let y = if luckyMode then random(-1, 1) else random_sign()
-    ballDir = xy(1 * factor, y)
-    ballSpeed = if luckyMode then 10 else 2
+    ballPos = xy(SCREEN_SIZE.x / 2, HalfScreenY)
+    let y = random(-1, 1)
+    ballDir = xy(factor, y)
+    ballSpeed = if gLuckyMode then 10 else 2
     ballLastHit = 0
     
 def OnBallBounceOnRacket(padY, ballY):
@@ -34,7 +31,7 @@ def OnBallBounceOnRacket(padY, ballY):
     if ballY < padY:
         ballDir.y *= -1.0
     canUsePortal = true
-    ballSpeed += 0.1
+    ballSpeed += 0.15
 
 //
 // Portals
@@ -81,13 +78,15 @@ InitBall()
 
 alienMoveDt = 0
 
+set_random_seed()
+
 frame
 ────────────────────────────────────────────────────────────────────────
 
 //
 // Back to menu
 if gamepad_array[0].q or gamepad_array[1].q or p1Score == max_score or p2Score == max_score:
-    lastWinner = if p1Score < p2Score then 2 else 1
+    gLastWinner = if p1Score < p2Score then 2 else 1
     push_mode(Menu)
 
 //
@@ -102,11 +101,14 @@ draw_line(xy(p2PortalLimit, 0), xy(p2PortalLimit, SCREEN_SIZE.y), rgba(p2Color.r
 
 //
 // Rackets
-if not luckyMode:
+if not gLuckyMode:
     if gamepad_array[0].y:
         p1Pos.y = clamp(p1Pos.y + (gamepad_array[0].y * racket_speed), maxRacketY.x, maxRacketY.y)
-    if gamepad_array[1].y:
-        p2Pos.y = clamp(p2Pos.y + (gamepad_array[1].y * racket_speed), maxRacketY.x, maxRacketY.y)
+    if gAIMode:
+        //TODO - p2Pos update
+    else:
+        if gamepad_array[1].y:
+            p2Pos.y = clamp(p2Pos.y + (gamepad_array[1].y * racket_speed), maxRacketY.x, maxRacketY.y)
 
 draw_line(xy(p1Pos.x, p1Pos.y - racket_size), xy(p1Pos.x, p1Pos.y + racket_size), White, 0, racket_width)
 draw_line(xy(p2Pos.x, p2Pos.y - racket_size), xy(p2Pos.x, p2Pos.y + racket_size), White, 0, racket_width)

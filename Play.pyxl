@@ -87,6 +87,8 @@ frame
 // Back to menu
 if gamepad_array[0].q or gamepad_array[1].q or p1Score == max_score or p2Score == max_score:
     gLastWinner = if p1Score < p2Score then 2 else 1
+    gLastP1Score = p1Score
+    gLastP2Score = p2Score
     push_mode(Menu)
 
 //
@@ -104,9 +106,10 @@ draw_line(xy(p2PortalLimit, 0), xy(p2PortalLimit, SCREEN_SIZE.y), rgba(p2Color.r
 if not gLuckyMode:
     if gamepad_array[0].y:
         p1Pos.y = clamp(p1Pos.y + (gamepad_array[0].y * racket_speed), maxRacketY.x, maxRacketY.y)
+    // AI
     if gAIMode:
         let Ygoal = HalfScreenY
-        if 2 ≠ ballLastHit:
+        if (0 == ballLastHit and ballDir.x > 0) or 1 == ballLastHit:
             Ygoal = ballPos.y
         
         let yMove = 1 // Down
@@ -117,6 +120,7 @@ if not gLuckyMode:
             p2Pos.y = clamp(Ygoal, maxRacketY.x, maxRacketY.y)
         else:
             p2Pos.y = clamp(p2Pos.y + (yMove * racket_speed), maxRacketY.x, maxRacketY.y)
+    // P2
     else:
         if gamepad_array[1].y:
             p2Pos.y = clamp(p2Pos.y + (gamepad_array[1].y * racket_speed), maxRacketY.x, maxRacketY.y)
@@ -131,8 +135,15 @@ if canUsePortal:
         currPortalColor = p1Color
         OnStartPortal()
     if ballPos.x > p2PortalLimit and ballLastHit == 2:
-        if gAIMode:
-            //TODO enable portal
+        // AI
+        // TODO - compute dest Y with and without portal and chose the farest one from P1 + check current velocity for opposite side selection
+        if gAIMode && not bIsInPortal:
+            if ballPos.x < p2PortalLimit + ballSpeed:
+                ballLastHit = -1 // Do portal test only one time
+                if random_integer(0, 1) == 1:
+                    currPortalColor = p2Color
+                    OnStartPortal()
+        // P2
         else if gamepad_array[1].e == 1:
             currPortalColor = p2Color
             OnStartPortal()

@@ -1,4 +1,6 @@
 // Scripts, variables, and constants here are visible to all modes
 let gLastWinner = 0
+let gLastP1Score = 0
+let gLastP2Score = 0
 let gLuckyMode = 0
 let gAIMode = 0

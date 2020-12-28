@@ -40,19 +40,23 @@ draw_text(font, "Lucky Mode", xy(SCREEN_SIZE.x/2, SCREEN_SIZE.y/2 + 80), GetMenu
 if gLastWinner ≠ 0:
     let xOffset = -120
     if 2 == gLastWinner: xOffset *= -1
-    draw_text(font, "Last winner : " + format_number(gLastWinner, ""), xy(SCREEN_SIZE.x/2 + xOffset, SCREEN_SIZE.y/2 + 80), GetWinnerColor(), ∅, ∅, "center", "center")
+    draw_text(
+        font
+        , "Last winner : " + format_number(gLastWinner, "") + " (" + format_number(gLastP1Score, "") + "-" + format_number(gLastP2Score, "") + ")"
+        , xy(SCREEN_SIZE.x/2 + xOffset, SCREEN_SIZE.y/2 + 80)
+        , GetWinnerColor()
+        , ∅, ∅, "center", "center"
+    )
     
-if 0 ≠joy.yy:
+if 0 ≠ joy.yy:
    currentChoice = clamp(currentChoice + joy.yy, 0, 3)
 else if joy.bb:
     if CHOICE.LUCKY == currentChoice: 
         gLuckyMode = 1
-        push_mode(Play)
     else if CHOICE.ONLINE == currentChoice: 
-        //TODO
-        push_mode(Play)
+        //TODO - check is currently hosting + someone joined for P2
+        // + something todo for P2 inputs ?
     else if CHOICE.AI == currentChoice:
         gAIMode = 1
-        push_mode(Play)
-    else:
-        push_mode(Play)
+    
+    push_mode(Play)

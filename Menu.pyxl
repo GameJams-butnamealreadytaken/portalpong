@@ -19,10 +19,11 @@ def GetWinnerColor():
         return p2Color
     else:
         return rgb(1,1,1)
+        
+play_sound(GameMusic, true)
 
 enter
 ────────────────────────────────────────────────────────────────────────
-play_sound(GameMusic, true)
 
 currentChoice = CHOICE.HUMAN
 

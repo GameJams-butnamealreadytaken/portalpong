@@ -7,6 +7,8 @@ let currentChoice = CHOICE.HUMAN
 def GetMenuTextColor(menu):
     if currentChoice == menu:
         return rgb(1,1,0)
+    else if menu == CHOICE.ONLINE:
+        return rgb(0.1,0.1,0.1)
     else:
         return rgb(1,1,1)
 
@@ -50,6 +52,7 @@ if gLastWinner ≠ 0:
     
 if 0 ≠ joy.yy:
    currentChoice = clamp(currentChoice + joy.yy, 0, 3)
+   if currentChoice == 1: currentChoice += joy.yy
 else if joy.bb:
     if CHOICE.LUCKY == currentChoice: 
         gLuckyMode = 1

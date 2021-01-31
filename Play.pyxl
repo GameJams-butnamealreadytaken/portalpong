@@ -137,7 +137,7 @@ if canUsePortal:
     if ballPos.x > p2PortalLimit and ballLastHit == 2:
         // AI
         // TODO - compute dest Y with and without portal and chose the farest one from P1 + check current velocity for opposite side selection
-        if gAIMode && not bIsInPortal:
+        if gAIMode and not bIsInPortal:
             if ballPos.x < p2PortalLimit + ballSpeed:
                 ballLastHit = -1 // Do portal test only one time
                 if random_integer(0, 1) == 1:
@@ -186,15 +186,15 @@ else:
             play_sound(WallCollision)
         else:
             // Rackets collisions
-            if ballPos.x > p1Pos.x && newBallX < p1Pos.x + racket_width:
-                if newBallY + ball_size ≥ p1Pos.y - racket_size && newBallY - ball_size ≤p1Pos.y + racket_size:
+            if ballPos.x > p1Pos.x and newBallX < p1Pos.x + racket_width:
+                if newBallY + ball_size ≥ p1Pos.y - racket_size and newBallY - ball_size ≤p1Pos.y + racket_size:
                     newBallX = p1Pos.x + racket_width
                     ballDir.x *= -1
                     ballLastHit = 1
                     OnBallBounceOnRacket(p1Pos.y, newBallY)
                     play_sound(RacketCollision)
-            else if ballPos.x < p2Pos.x && newBallX > p2Pos.x - racket_width:
-                if newBallY + ball_size ≥ p2Pos.y - racket_size && newBallY - ball_size ≤ p2Pos.y + racket_size:
+            else if ballPos.x < p2Pos.x and newBallX > p2Pos.x - racket_width:
+                if newBallY + ball_size ≥ p2Pos.y - racket_size and newBallY - ball_size ≤ p2Pos.y + racket_size:
                     newBallX = p2Pos.x - racket_width
                     ballDir.x *= -1
                     ballLastHit = 2
